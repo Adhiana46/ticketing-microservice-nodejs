@@ -1,0 +1,19 @@
+apiVersion: skaffold/v4beta1
+kind: Config
+metadata:
+  name: learn-microservice-ticketing-nodejs
+build:
+  local:
+    push: false
+  artifacts:
+  - image: adhiana46/ticketing-nodejs-auth
+    context: auth
+    docker:
+      dockerfile: Dockerfile
+    sync:
+      manual:
+        - src: 'src/**/*.ts'
+          dest: .
+manifests:
+  rawYaml:
+  - infra/k8s/auth-depl.yaml
