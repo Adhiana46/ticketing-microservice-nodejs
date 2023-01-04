@@ -1,0 +1,14 @@
+@baseurl = http://ticketing-app.test
+@contentType = application/json
+
+
+### Signup
+# @prompt email User Email Address
+# @prompt password User Password
+POST {{baseurl}}/api/users/signup HTTP/1.1
+content-type: {{contentType}}
+
+{
+    "email": "{{email}}",
+    "password": "{{password}}"
+}
