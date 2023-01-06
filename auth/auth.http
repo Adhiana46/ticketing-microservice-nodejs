@@ -1,4 +1,4 @@
-@baseurl = http://ticketing-app.test
+@baseurl = https://ticketing-app.test
 @contentType = application/json
 
 
