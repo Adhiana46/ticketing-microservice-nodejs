@@ -3,7 +3,6 @@ import { app } from "../../app";
 
 const endpoint = "/api/users/signout";
 const endpointSignup = "/api/users/signup";
-const endpointSignin = "/api/users/signin";
 
 it("clear the cookie after signout", async () => {
   await request(app)
