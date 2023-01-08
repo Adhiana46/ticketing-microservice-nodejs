@@ -18,7 +18,7 @@ app.use(json());
 app.use(
   cookieSession({
     signed: false, // disable encryption, because we store jwt
-    secure: true, // must https
+    secure: process.env.NODE_ENV !== "test", // must https
   })
 );
 
