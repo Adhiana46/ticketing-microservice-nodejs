@@ -14,6 +14,14 @@ build:
       manual:
         - src: 'src/**/*.ts'
           dest: .
+  - image: adhiana46/ticketing-nodejs-client
+    context: client
+    docker:
+      dockerfile: Dockerfile
+    sync:
+      manual:
+        - src: './**/*.js'
+          dest: .
 manifests:
   rawYaml:
   - infra/k8s/*
