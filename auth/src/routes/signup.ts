@@ -1,9 +1,8 @@
 import express, { Request, Response } from "express";
 import { body } from "express-validator";
 import jwt from "jsonwebtoken";
-import { BadRequestError } from "../errors";
+import { BadRequestError, validateRequest } from "@adhiana-ticketing/common";
 import { User } from "../model";
-import { validateRequest } from "../middlewares";
 
 const router = express.Router();
 

@@ -1,10 +1,13 @@
 import express, { Request, Response } from "express";
 import { body, validationResult } from "express-validator";
 import jwt from "jsonwebtoken";
-import { RequestValidationError, BadRequestError } from "../errors";
+import {
+  RequestValidationError,
+  BadRequestError,
+  validateRequest,
+} from "@adhiana-ticketing/common";
 import { User } from "../model";
 import { Password } from "../services";
-import { validateRequest } from "../middlewares";
 
 const router = express.Router();
 
