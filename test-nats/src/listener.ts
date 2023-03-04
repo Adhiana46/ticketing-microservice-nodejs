@@ -13,26 +13,8 @@ stan.on("connect", () => {
     process.exit();
   });
 
-  const options = stan
-    .subscriptionOptions()
-    .setManualAckMode(true)
-    .setDeliverAllAvailable()
-    .setDurableName("order-service");
-  const subscription = stan.subscribe(
-    "ticket:created",
-    "order-service-queue-group",
-    options
-  );
-
-  subscription.on("message", (msg: Message) => {
-    console.log(
-      "Message Received: ",
-      `[${msg.getSubject()}](${msg.getSequence()})`,
-      msg.getData()
-    );
-
-    msg.ack();
-  });
+  const ticketCreatedListener = new TicketCreatedListener(stan);
+  ticketCreatedListener.listen();
 });
 
 process.on("SIGINT", () => stan.close());
@@ -78,5 +60,16 @@ abstract class Listener {
     return typeof data === "string"
       ? JSON.parse(data)
       : JSON.parse(data.toString("utf8"));
+  }
+}
+
+class TicketCreatedListener extends Listener {
+  subject: string = "ticket:created";
+  queueGroupName: string = "payment-service";
+
+  onMessage(data: any, msg: nats.Message): void {
+    console.log("Event data!", data);
+
+    msg.ack();
   }
 }
