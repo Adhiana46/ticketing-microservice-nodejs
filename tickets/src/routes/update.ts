@@ -7,6 +7,8 @@ import {
   validateRequest,
 } from "@adhiana-ticketing/common";
 import { Ticket } from "../model";
+import { TicketUpdatedPublisher } from "../events/publisher/ticket-updated-publisher";
+import { natsWrapper } from "../nats-wrapper";
 
 const router = express.Router();
 
@@ -39,6 +41,14 @@ router.put(
     ticket.title = title;
     ticket.price = price;
     await ticket.save();
+
+    // publish event
+    await new TicketUpdatedPublisher(natsWrapper.client).publish({
+      id: ticket.id,
+      title: ticket.title,
+      price: ticket.price,
+      userId: ticket.userId,
+    });
 
     res.status(200).send(ticket);
   }
