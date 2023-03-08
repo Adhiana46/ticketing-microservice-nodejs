@@ -1,6 +1,7 @@
 import request from "supertest";
 import { app } from "../../app";
 import { Ticket } from "../../model";
+import { natsWrapper } from "../../nats-wrapper";
 
 const endpoint = "/api/tickets";
 
@@ -86,4 +87,25 @@ it("create a ticket with valid inputs", async () => {
   expect(tickets.length).toEqual(1);
   expect(tickets[0].title).toEqual(title);
   expect(tickets[0].price).toEqual(price);
+});
+
+it("publish an event", async () => {
+  const cookie = await getCookie();
+
+  let tickets = await Ticket.find({});
+  expect(tickets.length).toEqual(0);
+
+  const title = "Tiket Konser Blackping + Dicium LISA";
+  const price = 20;
+
+  await request(app)
+    .post(endpoint)
+    .set("Cookie", cookie)
+    .send({
+      title: title,
+      price: price,
+    })
+    .expect(201);
+
+  expect(natsWrapper.client.publish).toHaveBeenCalled();
 });

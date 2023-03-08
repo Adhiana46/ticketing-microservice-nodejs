@@ -1,6 +1,7 @@
 import request from "supertest";
 import { app } from "../../app";
 import mongoose from "mongoose";
+import { natsWrapper } from "../../nats-wrapper";
 
 const endpoint = "/api/tickets/:id";
 const endpointSave = "/api/tickets";
@@ -108,4 +109,31 @@ it("update the ticket if valid inputs provided", async () => {
 
   expect(ticketResponse.body.title).toEqual(updatedTitle);
   expect(ticketResponse.body.price).toEqual(updatedPrice);
+});
+
+it("publish an event", async () => {
+  const cookie = await getCookie();
+
+  const response = await request(app)
+    .post(endpointSave)
+    .set("Cookie", cookie)
+    .send({
+      title: "Valid title create",
+      price: 20,
+    })
+    .expect(201);
+
+  const updatedTitle = "Updated Title";
+  const updatedPrice = 23232;
+
+  await request(app)
+    .put(endpoint.replace(":id", response.body.id))
+    .set("Cookie", cookie)
+    .send({
+      title: updatedTitle,
+      price: updatedPrice,
+    })
+    .expect(200);
+
+  expect(natsWrapper.client.publish).toHaveBeenCalled();
 });
