@@ -9,6 +9,14 @@ import {
   NotFoundError,
 } from "@adhiana-ticketing/common";
 
+import {
+  createOrderRouter,
+  showOrderRouter,
+  showAllOrderRouter,
+  updateOrderRouter,
+  deleteOrderRouter,
+} from "./routes";
+
 const app = express();
 app.set("trust proxy", true);
 app.use(json());
@@ -20,7 +28,12 @@ app.use(
 );
 app.use(currentUser);
 
-// TODO: routes
+// routes
+app.use(createOrderRouter);
+app.use(showOrderRouter);
+app.use(showAllOrderRouter);
+app.use(updateOrderRouter);
+app.use(deleteOrderRouter);
 
 app.all("*", async () => {
   throw new NotFoundError();
