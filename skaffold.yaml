@@ -22,6 +22,14 @@ build:
       manual:
         - src: 'src/**/*.ts'
           dest: .
+  - image: adhiana46/ticketing-nodejs-orders
+    context: orders
+    docker:
+      dockerfile: Dockerfile
+    sync:
+      manual:
+        - src: 'src/**/*.ts'
+          dest: .
   - image: adhiana46/ticketing-nodejs-client
     context: client
     docker:
