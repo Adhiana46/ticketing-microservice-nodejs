@@ -1,6 +1,7 @@
 import request from "supertest";
 import { app } from "../../app";
 import { OrderStatus, Ticket } from "../../models";
+import { natsWrapper } from "../../nats-wrapper";
 
 const buildTicket = async () => {
   const ticket = Ticket.build({
@@ -61,4 +62,32 @@ it("delete the order", async () => {
   expect(updatedOrder.status).toEqual(OrderStatus.CancelledUser);
 });
 
-it.todo("todo emits an order cancelled event");
+it("emits order cancelled user event", async () => {
+  const ticket1 = await buildTicket();
+  const user1 = await getCookie();
+
+  // Create one order as User #1
+  const { body: order } = await request(app)
+    .post("/api/orders")
+    .set("Cookie", user1)
+    .send({
+      ticketId: ticket1.id,
+    })
+    .expect(201);
+
+  await request(app)
+    .delete("/api/orders/" + order.id)
+    .set("Cookie", user1)
+    .send({})
+    .expect(200);
+
+  const { body: updatedOrder } = await request(app)
+    .get("/api/orders/" + order.id)
+    .set("Cookie", user1)
+    .send({})
+    .expect(200);
+
+  expect(updatedOrder.status).toEqual(OrderStatus.CancelledUser);
+
+  expect(natsWrapper.client.publish).toHaveBeenCalled();
+});
