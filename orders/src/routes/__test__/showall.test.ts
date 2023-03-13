@@ -1,7 +1,6 @@
 import request from "supertest";
 import { app } from "../../app";
-import { Order, Ticket } from "../../models";
-import { cookie } from "express-validator";
+import { Ticket } from "../../models";
 
 const buildTicket = async () => {
   const ticket = Ticket.build({
