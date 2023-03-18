@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
+import { updateIfCurrentPlugin } from "mongoose-update-if-current";
 import { Order, OrderStatus } from "./order";
 
 interface TicketAttrs {
   id: string;
-  version: number;
   title: string;
   price: number;
 }
@@ -21,11 +21,6 @@ interface TicketModel extends mongoose.Model<TicketDoc> {
 
 const ticketSchema = new mongoose.Schema(
   {
-    version: {
-      type: Number,
-      required: true,
-      min: 0,
-    },
     title: {
       type: String,
       required: true,
@@ -46,6 +41,10 @@ const ticketSchema = new mongoose.Schema(
   }
 );
 
+// optimistic concurrency control
+ticketSchema.set("versionKey", "version");
+ticketSchema.plugin(updateIfCurrentPlugin);
+
 ticketSchema.pre("save", async (done) => {
   // empty
   done();
@@ -54,7 +53,6 @@ ticketSchema.pre("save", async (done) => {
 ticketSchema.statics.build = (attrs: TicketAttrs) => {
   return new Ticket({
     _id: attrs.id,
-    version: attrs.version,
     title: attrs.title,
     price: attrs.price,
   });
