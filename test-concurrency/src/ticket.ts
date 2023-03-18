@@ -7,7 +7,7 @@ const httpsAgent = new https.Agent({
 axios.defaults.httpsAgent = httpsAgent;
 
 const cookie =
-  "session=eyJqd3QiOiJleUpoYkdjaU9pSklVekkxTmlJc0luUjVjQ0k2SWtwWFZDSjkuZXlKcFpDSTZJalkwTVRCaE5UQXlOamxtTVRWaE5ERmpOemd5T0RKbU55SXNJbVZ0WVdsc0lqb2lZWE5rWVhOa1FHZHRZV2xzTG1OdmJTSXNJbWxoZENJNk1UWTNPRGd4TWpReE9YMC41Z285MGNfcHhsSVBvbjZwdDVCaVBlS1dNUDVqdUFhTWFvYm5wREExR2cwIn0=; Path=/; Secure; HttpOnly;";
+  "session=eyJqd3QiOiJleUpoYkdjaU9pSklVekkxTmlJc0luUjVjQ0k2SWtwWFZDSjkuZXlKcFpDSTZJalkwTVRWaVpqTTNNbU00TmpsaU1XRmhNR0ppWWpoak55SXNJbVZ0WVdsc0lqb2lZWE5rWVhOa1FHZHRZV2xzTG1OdmJTSXNJbWxoZENJNk1UWTNPVEUwTmpnd09IMC5KMmpSQm90TFFsRy1yeFdjNm9GeWN0bDAxVHpsTEtrYUtnZFZkMDZXUTRJIn0=; Path=/; Secure; HttpOnly;";
 
 const doRequest = async () => {
   const { data } = await axios.post(
@@ -18,7 +18,7 @@ const doRequest = async () => {
     }
   );
 
-  await axios.put(
+  const resp1 = await axios.put(
     `https://ticketing-app.test/api/tickets/${data.id}`,
     { title: "ticket", price: 10 },
     {
@@ -26,15 +26,19 @@ const doRequest = async () => {
     }
   );
 
-  await axios.put(
+  const resp2 = await axios.put(
     `https://ticketing-app.test/api/tickets/${data.id}`,
     { title: "ticket", price: 15 },
     {
       headers: { cookie },
     }
   );
+
+  console.log("Request complete");
 };
 
-for (let i = 0; i < 1000; i++) {
-  doRequest();
-}
+(async () => {
+  for (let i = 0; i < 250; i++) {
+    doRequest();
+  }
+})();
