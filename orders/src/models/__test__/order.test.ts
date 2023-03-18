@@ -6,6 +6,7 @@ it("implement optimistic concurrency control", async () => {
   // Create Ticket
   const ticket = Ticket.build({
     id: new mongoose.Types.ObjectId().toHexString(),
+    version: 0,
     title: "Konser Blackpink",
     price: 50,
   });
@@ -45,6 +46,7 @@ it("increment the version number on multiple saves", async () => {
   // Create Ticket
   const ticket = Ticket.build({
     id: new mongoose.Types.ObjectId().toHexString(),
+    version: 0,
     title: "Konser Blackpink",
     price: 50,
   });
