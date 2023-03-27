@@ -67,3 +67,17 @@ it("acks the message", async () => {
   // expect msg.ack() to have been called
   expect(msg.ack).toHaveBeenCalled();
 });
+
+it("does not acks the message if event is out-of-order (version)", async () => {
+  const { listener, ticket, data, msg } = await setup();
+
+  // increment the version to simulate out-of-order
+  data.version += 1;
+
+  // call the onMessage function with data + message
+  try {
+    await listener.onMessage(data, msg);
+  } catch (err) {}
+
+  expect(msg.ack).not.toHaveBeenCalled();
+});
