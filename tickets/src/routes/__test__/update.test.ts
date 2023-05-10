@@ -2,6 +2,7 @@ import request from "supertest";
 import { app } from "../../app";
 import mongoose from "mongoose";
 import { natsWrapper } from "../../nats-wrapper";
+import { Ticket } from "../../model";
 
 const endpoint = "/api/tickets/:id";
 const endpointSave = "/api/tickets";
@@ -18,6 +19,36 @@ it("returns a 404 if provided id does not exists", async () => {
       price: 10,
     })
     .expect(404);
+});
+
+it("returns a 400 if ticket already reserved", async () => {
+  const cookie = await getCookie();
+
+  // create ticket
+  const response = await request(app)
+    .post(endpointSave)
+    .set("Cookie", cookie)
+    .send({
+      title: "Valid title create",
+      price: 20,
+    })
+    .expect(201);
+
+  const ticketId = response.body.id;
+  const orderId = new mongoose.Types.ObjectId().toHexString();
+
+  const ticket = await Ticket.findById(ticketId);
+  ticket!.set({ orderId });
+  ticket!.save();
+
+  await request(app)
+    .put(endpoint.replace(":id", response.body.id))
+    .set("Cookie", cookie)
+    .send({
+      title: "updated title",
+      price: 200,
+    })
+    .expect(400);
 });
 
 it("returns a 401 if user not authenticated", async () => {
