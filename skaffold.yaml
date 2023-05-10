@@ -14,7 +14,30 @@ build:
       manual:
         - src: 'src/**/*.ts'
           dest: .
+  - image: adhiana46/ticketing-nodejs-tickets
+    context: tickets
+    docker:
+      dockerfile: Dockerfile
+    sync:
+      manual:
+        - src: 'src/**/*.ts'
+          dest: .
+  - image: adhiana46/ticketing-nodejs-orders
+    context: orders
+    docker:
+      dockerfile: Dockerfile
+    sync:
+      manual:
+        - src: 'src/**/*.ts'
+          dest: .
+  - image: adhiana46/ticketing-nodejs-client
+    context: client
+    docker:
+      dockerfile: Dockerfile
+    sync:
+      manual:
+        - src: './**/*.js'
+          dest: .
 manifests:
   rawYaml:
-  - infra/k8s/ingress-srv.yaml
-  - infra/k8s/auth-depl.yaml
+  - infra/k8s/*

@@ -1,6 +1,8 @@
 import express, { Request, Response } from "express";
-import { body, validationResult } from "express-validator";
-import { RequestValidationError, DatabaseConnectionError } from "../errors";
+import { body } from "express-validator";
+import jwt from "jsonwebtoken";
+import { BadRequestError, validateRequest } from "@adhiana-ticketing/common";
+import { User } from "../model";
 
 const router = express.Router();
 
@@ -13,18 +15,39 @@ router.post(
       .isLength({ min: 4, max: 20 })
       .withMessage("Password must be between 4 to 20 characters"),
   ],
+  validateRequest,
   async (req: Request, res: Response) => {
-    const errors = validationResult(req);
+    const { email, password } = req.body;
 
-    if (!errors.isEmpty()) {
-      throw new RequestValidationError(errors.array());
+    // Check if email already in use
+    const existingUser = await User.findOne({ email });
+
+    if (existingUser) {
+      throw new BadRequestError("Email already in use");
     }
 
-    console.log("Creating a User...");
+    // store to db
+    const user = User.build({
+      email: email,
+      password: password,
+    });
+    await user.save();
 
-    throw new DatabaseConnectionError();
+    // generate JWT
+    const userJwt = jwt.sign(
+      {
+        id: user.id,
+        email: user.email,
+      },
+      process.env.JWT_KEY!
+    );
 
-    res.send("POST /api/users/signup");
+    // store on session object (cookie)
+    req.session = {
+      jwt: userJwt,
+    };
+
+    return res.status(201).send(user);
   }
 );
 
