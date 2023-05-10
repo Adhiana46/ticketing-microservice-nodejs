@@ -2,9 +2,11 @@ import request from "supertest";
 import { app } from "../../app";
 import { OrderStatus, Ticket } from "../../models";
 import { natsWrapper } from "../../nats-wrapper";
+import mongoose from "mongoose";
 
 const buildTicket = async () => {
   const ticket = Ticket.build({
+    id: new mongoose.Types.ObjectId().toHexString(),
     title: "Konser BlackPink",
     price: 30,
   });
