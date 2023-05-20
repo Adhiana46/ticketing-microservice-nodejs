@@ -4,6 +4,7 @@ import { app } from "./app";
 import { natsWrapper } from "./nats-wrapper";
 import { TicketCreatedListener } from "./events/listeners/ticket-created-listener";
 import { TicketUpdatedListener } from "./events/listeners/ticket-updated-listener";
+import { ExpirationCompleteListener } from "./events/listeners/expiration-complete-listener";
 
 const start = async () => {
   // check env variables
@@ -39,6 +40,7 @@ const start = async () => {
     // Listening for events
     new TicketCreatedListener(natsWrapper.client).listen();
     new TicketUpdatedListener(natsWrapper.client).listen();
+    new ExpirationCompleteListener(natsWrapper.client).listen();
 
     mongoose.set("strictQuery", false); // prepare for mongoose v7
     await mongoose.connect(process.env.MONGO_URI);
