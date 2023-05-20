@@ -1,13 +1,13 @@
 import mongoose from "mongoose";
 import { Ticket } from "../../../model";
 import { natsWrapper } from "../../../nats-wrapper";
-import { OrderCancelledListener } from "../order-cancelled-listener";
-import { OrderCancelledUserEvent } from "@adhiana-ticketing/common";
+import { OrderCancelledExpireListener } from "../order-cancelled-expire-listener";
+import { OrderCancelledExpireEvent } from "@adhiana-ticketing/common";
 import { Message } from "node-nats-streaming";
 
 const setup = async () => {
   // create instance of the listener
-  const listener = new OrderCancelledListener(natsWrapper.client);
+  const listener = new OrderCancelledExpireListener(natsWrapper.client);
 
   const orderId = new mongoose.Types.ObjectId().toHexString();
 
@@ -20,7 +20,7 @@ const setup = async () => {
   ticket.set({ orderId });
   await ticket.save();
 
-  const data: OrderCancelledUserEvent["data"] = {
+  const data: OrderCancelledExpireEvent["data"] = {
     id: orderId,
     version: 0,
     ticket: {
