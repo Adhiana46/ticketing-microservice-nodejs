@@ -3,7 +3,8 @@ import mongoose from "mongoose";
 import { app } from "./app";
 import { natsWrapper } from "./nats-wrapper";
 import { OrderCreatedListener } from "./events/listener/order-created-listener";
-import { OrderCancelledListener } from "./events/listener/order-cancelled-listener";
+import { OrderCancelledUserListener } from "./events/listener/order-cancelled-user-listener";
+import { OrderCancelledExpireListener } from "./events/listener/order-cancelled-expire-listener";
 
 const start = async () => {
   // check env variables
@@ -37,7 +38,8 @@ const start = async () => {
     process.on("SIGTERM", () => natsWrapper.client.close());
 
     new OrderCreatedListener(natsWrapper.client).listen();
-    new OrderCancelledListener(natsWrapper.client).listen();
+    new OrderCancelledUserListener(natsWrapper.client).listen();
+    new OrderCancelledExpireListener(natsWrapper.client).listen();
 
     mongoose.set("strictQuery", false); // prepare for mongoose v7
     await mongoose.connect(process.env.MONGO_URI);

@@ -30,6 +30,14 @@ build:
       manual:
         - src: 'src/**/*.ts'
           dest: .
+  - image: adhiana46/ticketing-nodejs-expiration
+    context: expiration
+    docker:
+      dockerfile: Dockerfile
+    sync:
+      manual:
+        - src: 'src/**/*.ts'
+          dest: .
   - image: adhiana46/ticketing-nodejs-client
     context: client
     docker:
