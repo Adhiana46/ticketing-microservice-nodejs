@@ -8,6 +8,7 @@ import {
   errorHandler,
   NotFoundError,
 } from "@adhiana-ticketing/common";
+import { createChargeRouter } from "./routes";
 
 const app = express();
 app.set("trust proxy", true);
@@ -19,6 +20,8 @@ app.use(
   })
 );
 app.use(currentUser);
+
+app.use(createChargeRouter);
 
 app.all("*", async () => {
   throw new NotFoundError();
