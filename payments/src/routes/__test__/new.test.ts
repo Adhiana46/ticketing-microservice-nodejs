@@ -67,12 +67,14 @@ it("return an error if order is cancelled", async () => {
 });
 
 it("return a 201 with valid inputs", async () => {
+  const price = Math.floor(Math.random() * 1000000);
+
   // Create Order
   const order = await Order.build({
     id: new mongoose.Types.ObjectId().toHexString(),
     version: 0,
     userId: "user-id",
-    price: 1225,
+    price: price,
     status: OrderStatus.Created,
   }).save();
 
@@ -88,8 +90,11 @@ it("return a 201 with valid inputs", async () => {
     })
     .expect(201);
 
-  const chargeOptions = (stripe.charges.create as jest.Mock).mock.calls[0][0];
-  expect(chargeOptions.source).toEqual("tok_visa");
-  expect(chargeOptions.amount).toEqual(1225 * 100);
-  expect(chargeOptions.currency).toEqual("usd");
+  const stripeCharges = await stripe.charges.list({ limit: 10 });
+  const stripeCharge = stripeCharges.data.find((charge) => {
+    return charge.amount === price * 100;
+  });
+
+  expect(stripeCharge).toBeDefined();
+  expect(stripeCharge!.currency).toEqual("usd");
 });

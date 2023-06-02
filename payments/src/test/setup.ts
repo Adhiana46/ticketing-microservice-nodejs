@@ -8,9 +8,11 @@ declare global {
 }
 
 jest.mock("../nats-wrapper");
-jest.mock("../stripe");
+// jest.mock("../stripe");
 
 let mongo: MongoMemoryServer;
+
+process.env.STRIPE_KEY = "sk_test_51NEDzjK58ihBG5ODLkZa4OJQpA1huFxRqxUOstAKHWROaplIrW7iSaXKcgcCshC4uw2KT4qHyjB2TK9hSfz5izfj00w6pvtiBr";
 
 beforeAll(async () => {
   process.env.JWT_KEY = "secret";
