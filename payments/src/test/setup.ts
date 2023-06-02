@@ -8,6 +8,7 @@ declare global {
 }
 
 jest.mock("../nats-wrapper");
+jest.mock("../stripe");
 
 let mongo: MongoMemoryServer;
 
