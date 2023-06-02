@@ -21,6 +21,12 @@ export class ExpirationCompleteListener extends Listener<ExpirationCompleteEvent
       throw new Error("Order not found");
     }
 
+    const cancelableStatus = [OrderStatus.Created, OrderStatus.AwaitingPayment];
+    if (cancelableStatus.indexOf(order.status) === -1) {
+      msg.ack();
+      return;
+    }
+
     order.set({
       status: OrderStatus.CancelledExpires,
     });
