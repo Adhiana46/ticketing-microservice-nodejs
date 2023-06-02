@@ -8,6 +8,7 @@ import {
   NotAuthorizeError,
   OrderStatus,
 } from "@adhiana-ticketing/common";
+import { stripe } from "../stripe";
 import { Order } from "../models/order";
 
 const router = express.Router();
@@ -37,6 +38,12 @@ router.post(
     if (canceledStatus.indexOf(order.status) !== -1) {
       throw new BadRequestError("Cannot pay for an cancelled order");
     }
+
+    await stripe.charges.create({
+      currency: "usd",
+      amount: order.price * 100, // convert dollar to cent
+      source: token,
+    });
 
     res.send({ success: true });
   }
