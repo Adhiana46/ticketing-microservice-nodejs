@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import { Order } from "../../models/order";
 import { OrderStatus } from "@adhiana-ticketing/common";
 import { stripe } from "../../stripe";
+import { Payment } from "../../models/payment";
 
 it("return an error 404 if order not found", async () => {
   const token = "some-random-secure-token";
@@ -97,4 +98,10 @@ it("return a 201 with valid inputs", async () => {
 
   expect(stripeCharge).toBeDefined();
   expect(stripeCharge!.currency).toEqual("usd");
+
+  const payment = await Payment.findOne({
+    orderId: order.id,
+    stripeId: stripeCharge!.id,
+  });
+  expect(payment).not.toBeNull();
 });
