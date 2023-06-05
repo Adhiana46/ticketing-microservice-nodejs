@@ -10,7 +10,7 @@ it("respond detail of current user", async () => {
     .get(endpoint)
     .set("Cookie", cookie)
     .send({})
-    .expect(400);
+    .expect(200);
 
   expect(response.body.currentUser.email).toEqual("test@test.com");
 });
